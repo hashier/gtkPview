@@ -84,6 +84,19 @@ int main( int   argc,
 
     gtk_widget_show (box1);
 
+	/* uebungsaufgabe */
+    button = gtk_button_new_with_label ("quit");
+
+    g_signal_connect (G_OBJECT (button), "clicked",
+		      G_CALLBACK (gtk_main_quit), NULL);
+
+    gtk_box_pack_start(GTK_BOX (box1), button, TRUE, TRUE, 0);
+
+    gtk_widget_show (button);
+	/* uebungsaufgabe */
+
+
+
     gtk_widget_show (window);
     
     /* Rest in gtk_main and wait for the fun to begin! */
