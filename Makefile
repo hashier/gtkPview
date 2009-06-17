@@ -12,4 +12,4 @@ main: main.c
 clean:
 	rm -rf *.o
 	rm -rf main
-	rm -rf logo.png logo.jpg
+	rm -rf logo.*
