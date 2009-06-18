@@ -1,6 +1,5 @@
 CC=gcc
-CFLAGS=-O2 -W -Wall -pedantic `pkg-config gtk+-2.0 --cflags`
-CFLAGS=-ggdb `pkg-config gtk+-2.0 --cflags`
+CFLAGS=-ggdb -O2 -W -Wall -pedantic `pkg-config gtk+-2.0 --cflags` -std=c99
 LIBS=-lSDL -lpthread `curl-config --libs` `pkg-config gtk+-2.0 --libs`
 
 main: main.c
@@ -12,4 +11,6 @@ main: main.c
 clean:
 	rm -rf *.o
 	rm -rf main
+
+clean-all:
 	rm -rf logo.*
