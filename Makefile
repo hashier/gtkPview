@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-ggdb -O2 -W -Wall -pedantic `pkg-config gtk+-2.0 --cflags` -std=c99
 LIBS=-lSDL -lpthread `curl-config --libs` `pkg-config gtk+-2.0 --libs`
 
-main: main.c
+main: main.c main.h
 	$(CC) $(CFLAGS) -c main.c
 	$(CC) main.o $(LIBS) -o main
 
