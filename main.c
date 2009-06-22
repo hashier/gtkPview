@@ -174,7 +174,7 @@ static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	GError *error = NULL;
 	char *filename;
 
-	filename=gtk_entry_get_text(app->entry);
+	filename=gtk_entry_get_text(GTK_ENTRY(app->entry));
 	gdk_pixbuf_save(app->pixbuf, filename, "jpeg", &error, "quality", "100", NULL);
 	if (error != NULL) {
 		g_print("Error: %s\n", error->message);
