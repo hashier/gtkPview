@@ -14,6 +14,8 @@ int main(int argc, char **argv) {
 
 	gtk_init (&argc, &argv);
 
+	g_print("This is a test, bugfix1\n");
+
 	app.list=NULL;
 	app.current=NULL;
 
