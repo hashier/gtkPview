@@ -145,6 +145,11 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 	GError *error = NULL;
 
 	if (app->current == NULL) {
+		FILE *fp = fopen( "logo.jpg", "r" );
+		if( fp == NULL )
+			return FALSE;
+		fclose( fp );
+
 		gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
 		app->pixbuf = gdk_pixbuf_new_from_file_at_scale("logo.jpg", width, height, TRUE, &error);
 		if (error != NULL) {
