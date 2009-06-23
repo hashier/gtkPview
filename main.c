@@ -181,7 +181,6 @@ static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	GError *error = NULL;
 	const gchar *filename;
 
-	g_print("Now tring to save file\n"); /* Wicked feature */
 	filename=gtk_entry_get_text(GTK_ENTRY(app->entry));
 	gdk_pixbuf_save(app->pixbuf, filename, "jpeg", &error, "quality", "100", NULL);
 	if (error != NULL) {
