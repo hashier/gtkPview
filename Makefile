@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-ggdb -O2 -W -Wall -pedantic `pkg-config gtk+-2.0 --cflags` -std=c99
+CFLAGS=-ggdb -O2 -W -Wall -pedantic `pkg-config gtk+-2.0 --cflags` -std=c99 -Wno-unused-parameter
 LIBS=-lSDL -lpthread `curl-config --libs` `pkg-config gtk+-2.0 --libs`
 
 main: main.c main.h

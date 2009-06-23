@@ -117,8 +117,10 @@ static void connect_signals(APP *app) {
 	                  G_CALLBACK(callback_btn_dl), app);
 	g_signal_connect(G_OBJECT (app->btn_save), "clicked",
 	                  G_CALLBACK(callback_btn_save), app);
+	/*
 	g_signal_connect(G_OBJECT (app->window), "expose-event",
 	                  G_CALLBACK(set_image), app);
+	*/
 	g_signal_connect(G_OBJECT (app->btn_prev), "clicked",
 	                  G_CALLBACK(callback_btn_prev), app);
 	g_signal_connect(G_OBJECT (app->btn_next), "clicked",
@@ -179,7 +181,7 @@ static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	GError *error = NULL;
 	const gchar *filename;
 
-	filename=gtk_entry_get_text( GTK_ENTRY( app->entry ) );
+	filename=gtk_entry_get_text(GTK_ENTRY(app->entry));
 	gdk_pixbuf_save(app->pixbuf, filename, "jpeg", &error, "quality", "100", NULL);
 	if (error != NULL) {
 		g_print("Error: %s\n", error->message);
@@ -199,13 +201,12 @@ static gboolean callback_btn_prev(GtkWidget *widget, APP *app) {
 	app->pixbuf = app->current->data;
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->pixbuf);
 	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
-	return FALSE;
-}
+	}
 
 static gboolean callback_btn_next(GtkWidget *widget, APP *app) {
 	if (g_list_next(app->current) == NULL) {
-		return FALSE;
-	}
+			return FALSE;
+		}
 	app->current = g_list_next(app->current);
 	app->pixbuf = app->current->data;
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->pixbuf);
