@@ -143,6 +143,11 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 	GError *error = NULL;
 
 	if (app->current == NULL) {
+		FILE *fp = fopen( "logo.jpg", "r" );
+		if( fp == NULL )
+			return FALSE;
+		fclose( fp );
+
 		gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
 		app->pixbuf = gdk_pixbuf_new_from_file_at_scale("logo.jpg", width, height, TRUE, &error);
 		if (error != NULL) {
@@ -172,9 +177,9 @@ static gboolean callback_btn_dl(GtkWidget *widget, APP *app) {
 
 static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	GError *error = NULL;
-	char *filename;
+	const gchar *filename;
 
-	filename=gtk_entry_get_text(app->entry);
+	filename=gtk_entry_get_text( GTK_ENTRY( app->entry ) );
 	gdk_pixbuf_save(app->pixbuf, filename, "jpeg", &error, "quality", "100", NULL);
 	if (error != NULL) {
 		g_print("Error: %s\n", error->message);
