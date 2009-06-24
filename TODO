@@ -1,0 +1,7 @@
+Ok, we have to split the functions.
+
+get_image only gets an image
+set_image only sets app->image
+callback_btn_dl calls callback_btn_dl which calls get_image and set_image
+refresh_image calls set_image (if needed)
+and so on
