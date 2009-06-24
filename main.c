@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
 
 	// This must be NULL if there is no loaded pixbuf at all.
 	app.scaled = NULL;
+	app.pixbuf = NULL;
 
 	/* creatin stuff */
 	create(&app);
@@ -130,6 +131,42 @@ static void put(APP *app) {
 	gtk_box_pack_start (GTK_BOX (app->hbox2), app->btn_next, TRUE, TRUE, 0);
 }
 
+gboolean resize_window( GtkWidget *w, GdkEvent *e, APP *app )
+{
+	if( app->pixbuf != NULL )
+	{
+		GError *error = NULL;
+		gint width, height;
+		gtk_window_get_size( GTK_WINDOW( app->window ), &width, &height );
+
+		// If window size hasn't changed, then we don't want
+		// to scale pixbuf again and set it back, because image
+		// should be same sized as before. Just return.
+		if( app->last_width == width && app->last_height == height )
+			return FALSE;
+
+		// Keep current window size in structure memory!
+		app->last_width = width;
+		app->last_height = height;
+
+		// Save current pixbuf to file
+		gdk_pixbuf_save( app->pixbuf, FILENAME, "jpeg", &error, 
+			"quality", "100", NULL);
+		
+		// Free memory of old scaled pixbuf if necessary
+		if( app->scaled != NULL )
+			g_object_unref( app->scaled );
+
+		// Load pixbuf scaled
+		app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME, 
+			width, height, TRUE, &error);
+
+		gtk_image_set_from_pixbuf( GTK_IMAGE( app->image ), app->scaled );
+	}
+
+	return FALSE;
+}
+
 static void connect_signals(APP *app) {
 	g_signal_connect(G_OBJECT (app->window), "destroy",
 	                  G_CALLBACK(quit_prog), app->image);
@@ -137,10 +174,11 @@ static void connect_signals(APP *app) {
 	                  G_CALLBACK(callback_btn_dl), app);
 	g_signal_connect(G_OBJECT (app->btn_save), "clicked",
 	                  G_CALLBACK(callback_btn_save), app);
-	/*
+
+	// When window must be redrawn
 	g_signal_connect(G_OBJECT (app->window), "expose-event",
-	                  G_CALLBACK(set_image), app);
-	*/
+	                  G_CALLBACK( resize_window ), app);
+
 	g_signal_connect(G_OBJECT (app->btn_prev), "clicked",
 	                  G_CALLBACK(callback_btn_prev), app);
 	g_signal_connect(G_OBJECT (app->btn_next), "clicked",
@@ -208,6 +246,7 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 	app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME, 
 		width, height, TRUE, &error);
 
+	// Put scaled image here
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 
 	return FALSE;
