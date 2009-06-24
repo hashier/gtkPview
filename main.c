@@ -39,6 +39,9 @@ int main(int argc, char **argv) {
 	/* make visable */
 	makevisable(&app);
 
+	/* load first image, if available */
+	set_image(NULL, NULL, &app);
+
 	/* run */
 	gtk_main();
 
@@ -85,8 +88,8 @@ static int get_new_image(APP *app) {
 	// Create fullsized pixbuf
 	app->pixbuf = gdk_pixbuf_new_from_file( FILENAME, &error );
 
-	// Create scaled pixbuf 
-	app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME, 
+	// Create scaled pixbuf
+	app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME,
 		width, height, TRUE, &error);
 
 	if (error != NULL) {
@@ -98,8 +101,6 @@ static int get_new_image(APP *app) {
 	// We must add full sized pixbuf to list
 	app->list=g_list_append(app->list, app->pixbuf);
 	app->current=g_list_nth(app->list, g_list_index(app->list, app->pixbuf));
-
-	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
 
 	return TRUE;
 }
@@ -150,15 +151,15 @@ gboolean resize_window( GtkWidget *w, GdkEvent *e, APP *app )
 		app->last_height = height;
 
 		// Save current pixbuf to file
-		gdk_pixbuf_save( app->pixbuf, FILENAME, "jpeg", &error, 
+		gdk_pixbuf_save( app->pixbuf, FILENAME, "jpeg", &error,
 			"quality", "100", NULL);
-		
+
 		// Free memory of old scaled pixbuf if necessary
 		if( app->scaled != NULL )
 			g_object_unref( app->scaled );
 
 		// Load pixbuf scaled
-		app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME, 
+		app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME,
 			width, height, TRUE, &error);
 
 		gtk_image_set_from_pixbuf( GTK_IMAGE( app->image ), app->scaled );
@@ -217,7 +218,7 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 		app->pixbuf = gdk_pixbuf_new_from_file( FILENAME, &error );
 
 		// Scaled pixbuf
-		app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME, 
+		app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME,
 			width, height, TRUE, &error);
 
 		if (error != NULL) {
@@ -236,18 +237,23 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 		app->current=app->list;
 	}
 
+	// Read window size, so we can scale image
+	gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
+
 	//gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->pixbuf);
 
 	// Save fullsized pixbuf to file
-	gdk_pixbuf_save(app->pixbuf, FILENAME, "jpeg", &error, 
+	gdk_pixbuf_save(app->pixbuf, FILENAME, "jpeg", &error,
 		"quality", "100", NULL);
 
 	// Read pixbuf with correct scaling
-	app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME, 
+	app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME,
 		width, height, TRUE, &error);
 
 	// Put scaled image here
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
+
+	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
 
 	return FALSE;
 }
@@ -290,7 +296,7 @@ void get_scaled( APP *app, char direction )
 	GError *error = NULL;
 	int width, height;
 
-	// Read window size, so we know what sized our 
+	// Read window size, so we know what sized our
 	// scaled pixbuf should be.
 	gtk_window_get_size( GTK_WINDOW( app->window ), &width, &height );
 
@@ -301,7 +307,7 @@ void get_scaled( APP *app, char direction )
 		app->current = g_list_next(app->current);
 
 	// Save our full sized pixbuf to file
-	gdk_pixbuf_save( app->current->data, FILENAME, "jpeg", &error, 
+	gdk_pixbuf_save( app->current->data, FILENAME, "jpeg", &error,
 		"quality", "100", NULL);
 
 	// We must free old scaled pixbuf, or else this will take
@@ -314,6 +320,7 @@ void get_scaled( APP *app, char direction )
 	// it and also keep aspect ratio, but until I find it I use this...
 	app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME,
 		width, height, TRUE, &error );
+	app->pixbuf = app->current->data;
 }
 
 
@@ -328,8 +335,7 @@ static gboolean callback_btn_prev(GtkWidget *widget, APP *app) {
 	get_scaled( app, PREVIOUS );
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 
-	g_print("Showing pic number: %u\n", 
-		g_list_index(app->list, app->pixbuf));
+	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
 
 	return TRUE;
 }
@@ -341,8 +347,9 @@ static gboolean callback_btn_next(GtkWidget *widget, APP *app) {
 
 	// Read to app->scaled scaled pixbuf.
 	get_scaled( app, NEXT );
-
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
+
 	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
+
 	return FALSE;
 }
