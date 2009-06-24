@@ -11,6 +11,7 @@ typedef struct _APP {
 	GtkWidget *btn_prev;
 	GtkWidget *btn_next;
 	GdkPixbuf *pixbuf;
+	GdkPixbuf *scaled;
 	GList *current;
 } APP;
 
