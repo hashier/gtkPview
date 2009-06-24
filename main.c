@@ -94,7 +94,7 @@ static int get_new_image(APP *app) {
 		return FALSE;
 	}
 
-	// We must add full sized pixbuf
+	// We must add full sized pixbuf to list
 	app->list=g_list_append(app->list, app->pixbuf);
 	app->current=g_list_nth(app->list, g_list_index(app->list, app->pixbuf));
 
@@ -200,8 +200,15 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 
 	//gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->pixbuf);
 
-	// Set scaled pixbuf to image element.
-	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->current->data);
+	// Save fullsized pixbuf to file
+	gdk_pixbuf_save(app->pixbuf, FILENAME, "jpeg", &error, 
+		"quality", "100", NULL);
+
+	// Read pixbuf with correct scaling
+	app->scaled = gdk_pixbuf_new_from_file_at_scale( FILENAME, 
+		width, height, TRUE, &error);
+
+	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 
 	return FALSE;
 }
