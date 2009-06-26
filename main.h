@@ -29,5 +29,7 @@ static int get_new_image(APP *app);
 static gboolean callback_btn_prev(GtkWidget *widget, APP *app);
 static gboolean callback_btn_next(GtkWidget *widget, APP *app);
 static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app);
+static gboolean callback_btn_next(GtkWidget *widget, APP *app);
+static gboolean start_up(APP *app);
 
 #endif /* __main_h__ */
