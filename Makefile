@@ -1,18 +1,37 @@
-CC=gcc
-CFLAGS=-ggdb -O2 -W -Wall -pedantic `pkg-config gtk+-2.0 --cflags` -std=c99 -Wno-unused-parameter
-LIBS=-lSDL -lpthread `curl-config --libs` `pkg-config gtk+-2.0 --libs`
+GCC_COMPILER = gcc
+GCC_COMPILER_FLAGS = -ggdb -Wall
 
-all: gtkPview
+GTK_INCS = `pkg-config gtk+-2.0 --cflags`
+GTK_LIBS = `pkg-config gtk+-2.0 --libs`
+CURL_LIBS = `curl-config --libs`
 
-gtkPview: main.c main.h
-	$(CC) $(CFLAGS) -c main.c
-	$(CC) main.o $(LIBS) -o gtkPview
+MISC_LIBS = -lm -lrt -lpthread
+
+INCS = $(GTK_INCS)
+LIBS = $(GTK_LIBS) $(CURL_LIBS) $(MISC_LIBS)
+
+TARGET = gtkPview
+
+SRC_DIRS := .
+SRC_FILES := $(foreach DIR, $(SRC_DIRS), $(wildcard $(DIR)/*.c))
+OBJS := $(patsubst %.c, %.o, $(SRC_FILES))
+
+all : $(TARGET)
+	@echo All done
+
+$(TARGET) : $(OBJS)
+	$(GCC_COMPILER) $(GCC_COMPILER_FLAGS) -o $@ $^ $(LIBS)
+
+%.o : %.c
+	$(GCC_COMPILER) $(GCC_COMPILER_FLAGS) -o $@ -c $(INCS) $<
+
+clean :
+	rm -f $(OBJS) $(TARGET)
+	@echo Clean done
 
 .PHONY: clean
 
-clean:
-	rm -rf *.o
-	rm -rf main gtkPview
 
-clean-all:
-	rm -rf logo.*
+# $^ test.o / test.cu
+# $@ test
+# $< test.o / test.cu
