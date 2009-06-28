@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <gtk/gtk.h>
 #include <glib.h>
@@ -255,7 +256,12 @@ static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	const gchar *filename;
 
 	filename = gtk_entry_get_text(GTK_ENTRY(app->entry));
-	gdk_pixbuf_save(app->pixbuf, filename, "jpeg", 
+
+	// Add JPG-extension
+	char *final_name = malloc( strlen( filename ) + 5 );
+	sprintf( final_name, "%s.jpg", filename );
+	
+	gdk_pixbuf_save(app->pixbuf, (const gchar *) final_name, "jpeg", 
 		&error, "quality", "100", NULL);
 
 	if (error != NULL) {
@@ -264,18 +270,16 @@ static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 		return FALSE;
 	}
 
-	// If we are here, then everything is ok.
-	// Now we show message box.
+	// Show message dialog
 	GtkWidget *dialog;
 
 	dialog = gtk_message_dialog_new( GTK_WINDOW( app->window ), 
 		GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
-		"This image is now saved in file %s.", filename );
+		"This image is now saved in file %s.", final_name );
 
 	gtk_window_set_title( GTK_WINDOW( dialog ), "Information" );
 	gtk_dialog_run( GTK_DIALOG( dialog ) );
 	gtk_widget_destroy( dialog );
-	g_print( "Saved!" );
 
 	return FALSE;
 }
