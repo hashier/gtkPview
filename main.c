@@ -49,6 +49,28 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
+// *********************************************
+//	update_title
+//
+//	@brief Update window title, eg. shows the
+//		number of current image and number
+// 		of images total in linked list.
+//
+//	@param APP *app Application structure
+//
+// *********************************************
+static void update_title( APP *app )
+{
+	gchar *title = malloc( 1024 );
+	sprintf( title, "gtkPview (%u/%u)", 
+		( g_list_index( app->list, app->pixbuf ) +1 ),
+		g_list_length( app->list ) );
+
+	gtk_window_set_title( GTK_WINDOW( app->window ), title );
+	free( title );
+}
+
+
 static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
 	size_t written;
 
@@ -248,6 +270,7 @@ static gboolean callback_btn_dl(GtkWidget *widget, APP *app) {
 	if (get_new_image(app)) {
 		set_image(NULL, NULL, app);
 	}
+	update_title( app );
 	return FALSE;
 }
 
@@ -339,6 +362,7 @@ static gboolean callback_btn_prev(GtkWidget *widget, APP *app) {
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 
 	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
+	update_title( app );
 
 	return TRUE;
 }
@@ -351,6 +375,7 @@ static gboolean callback_btn_next(GtkWidget *widget, APP *app) {
 	// Read to app->scaled scaled pixbuf.
 	get_scaled(app, NEXT);
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
+	update_title( app );
 
 	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
 

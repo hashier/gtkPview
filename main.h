@@ -16,6 +16,7 @@ typedef struct _APP {
 	GList *current;
 } APP;
 
+static void update_title( APP *app );
 static gboolean callback_btn_dl(GtkWidget *widget, APP *app);
 static gboolean callback_btn_save(GtkWidget *widget, APP *app);
 static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app);
