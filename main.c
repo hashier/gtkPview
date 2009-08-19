@@ -107,7 +107,7 @@ static int get_new_image(APP *app) {
 
 static void create(APP *app) {
 	app->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_size_request(GTK_WIDGET(app->window), 400, 300);
+	gtk_widget_set_size_request(GTK_WIDGET(app->window), 300, 300);
 	gtk_window_set_title(GTK_WINDOW(app->window), "gtkPview");
 	app->vbox = gtk_vbox_new(FALSE, 5);
 	app->hbox = gtk_hbox_new(FALSE, 0);
@@ -127,12 +127,12 @@ static void put(APP *app) {
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_dl, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_save, TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_save_all, 
-			TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->entry, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox2, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_prev, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_next, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_save_all, 
+			TRUE, TRUE, 0);
 }
 
 gboolean resize_window(GtkWidget *w, GdkEvent *e, APP *app) {
@@ -169,7 +169,7 @@ gboolean resize_window(GtkWidget *w, GdkEvent *e, APP *app) {
 	return FALSE;
 }
 
-static gboolean callback_btn_save_all(GtkWidget *widget, APP *app) 
+static gboolean callback_btn_save_all( GtkWidget *widget, APP *app ) 
 {
 	GError *error = NULL;
 
@@ -199,37 +199,17 @@ static gboolean callback_btn_save_all(GtkWidget *widget, APP *app)
 		temp = g_list_next( temp );
 	}
 
-	/*
-	// Save our full sized pixbuf to file
-	gdk_pixbuf_save(app->current->data, FILENAME, "jpeg", &error, "quality",
-			"100", NULL);
-	filename = gtk_entry_get_text(GTK_ENTRY(app->entry));
-
-	// Add JPG-extension
-	char *final_name = malloc( strlen( filename ) + 5 );
-	sprintf( final_name, "%s.jpg", filename );
-	
-	gdk_pixbuf_save(app->pixbuf, (const gchar *) final_name, "jpeg", 
-		&error, "quality", "100", NULL);
-
-	if (error != NULL) {
-		g_print("Error: %s\n", error->message);
-		error = NULL;
-		return FALSE;
-	}
-
 	// Show message dialog
 	GtkWidget *dialog;
 
 	dialog = gtk_message_dialog_new( GTK_WINDOW( app->window ), 
 		GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
-		"This image is now saved in file %s.", final_name );
+		"Saved %d images!", num_items );
 
 	gtk_window_set_title( GTK_WINDOW( dialog ), "Information" );
 	gtk_dialog_run( GTK_DIALOG( dialog ) );
 	gtk_widget_destroy( dialog );
 
-	*/
 	return FALSE;
 }
 
