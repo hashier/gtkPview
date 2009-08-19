@@ -1,9 +1,13 @@
 #ifndef __main_h__
 #define __main_h__
 
+#define STATE_FULLSCREEN 0
+#define STATE_NORMAL 1
+
 typedef struct _APP {
 	GtkWidget *vbox, *hbox, *hbox2;
 	GtkWidget *btn_dl, *btn_save, *btn_save_all;
+	GtkWidget *eventbox;
 	GtkWidget *entry;
 	GtkWidget *image;
 	GtkWidget *window;
@@ -14,6 +18,9 @@ typedef struct _APP {
 	GdkPixbuf *pixbuf;
 	GdkPixbuf *scaled;
 	GList *current;
+
+	// Fullscreen or not?
+	int state;
 } APP;
 
 static void update_title( APP *app );

@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
 
 	gtk_init(&argc, &argv);
 
+	app.state = STATE_NORMAL;
 	app.list = NULL;
 	app.current = NULL;
 
@@ -119,11 +120,14 @@ static void create(APP *app) {
 	app->hbox2 = gtk_hbox_new(FALSE, 0);
 	app->btn_prev = gtk_button_new_with_label("Prev pic");
 	app->btn_next = gtk_button_new_with_label("Next pic");
+	app->eventbox = gtk_event_box_new();
 }
 
 static void put(APP *app) {
 	gtk_container_add(GTK_CONTAINER(app->window), app->vbox);
-	gtk_box_pack_start(GTK_BOX(app->vbox), app->image, TRUE, TRUE, 0);
+	gtk_container_add( GTK_CONTAINER( app->eventbox ), app->image );
+
+	gtk_box_pack_start(GTK_BOX(app->vbox), app->eventbox, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_dl, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_save, TRUE, TRUE, 0);
@@ -213,6 +217,27 @@ static gboolean callback_btn_save_all( GtkWidget *widget, APP *app )
 	return FALSE;
 }
 
+static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
+{
+	switch( e->keyval )
+	{
+		case 'f':
+			
+			if( app->state == STATE_NORMAL )
+			{
+				gtk_window_fullscreen( GTK_WINDOW( app->window ) );
+				app->state = STATE_FULLSCREEN;
+			}
+			else
+			{
+				gtk_window_unfullscreen( GTK_WINDOW( app->window ) );
+				app->state = STATE_NORMAL;
+			}
+
+			break;
+	}
+}
+
 static void connect_signals(APP *app) {
 	g_signal_connect(G_OBJECT(app->window), "destroy", G_CALLBACK(quit_prog),
 			app->image);
@@ -229,6 +254,10 @@ static void connect_signals(APP *app) {
 			callback_btn_prev), app);
 	g_signal_connect(G_OBJECT(app->btn_next), "clicked", G_CALLBACK(
 			callback_btn_next), app);
+
+	// Listen keypresses
+	g_signal_connect( G_OBJECT( app->window ), "key-press-event",
+			G_CALLBACK( callback_key_pressed ), app );
 }
 
 static void makevisable(APP *app) {
