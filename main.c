@@ -138,6 +138,13 @@ static void put(APP *app) {
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_next, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_save_all, 
 			TRUE, TRUE, 0);
+
+	// Set bg color
+	GdkColor color;
+	gdk_color_parse( "white", &color );
+	gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+			&color );
+
 }
 
 gboolean resize_window(GtkWidget *w, GdkEvent *e, APP *app) {
@@ -224,20 +231,34 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 	{
 		// To fullscreen and back
 		case 'f':
-			
+
+			// To fullscreen
 			if( app->state == STATE_NORMAL )
 			{
 				gtk_window_fullscreen( GTK_WINDOW( app->window ) );
 				app->state = STATE_FULLSCREEN;
 				gtk_widget_hide( app->hbox );
 				gtk_widget_hide( app->hbox2 );
+
+				// Eventbox background color is nicer when it is black
+				GdkColor color;
+				gdk_color_parse( "black", &color );
+				gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+						&color );
 			}
+
+			// Back to normal sized window
 			else
 			{
 				gtk_window_unfullscreen( GTK_WINDOW( app->window ) );
 				app->state = STATE_NORMAL;
 				gtk_widget_show( app->hbox );
 				gtk_widget_show( app->hbox2 );
+
+				GdkColor color;
+				gdk_color_parse( "white", &color );
+				gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+						&color );
 			}
 			break;
 
