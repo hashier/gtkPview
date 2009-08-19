@@ -107,12 +107,13 @@ static int get_new_image(APP *app) {
 
 static void create(APP *app) {
 	app->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_size_request(GTK_WIDGET(app->window), 300, 300);
+	gtk_widget_set_size_request(GTK_WIDGET(app->window), 400, 300);
 	gtk_window_set_title(GTK_WINDOW(app->window), "gtkPview");
 	app->vbox = gtk_vbox_new(FALSE, 5);
 	app->hbox = gtk_hbox_new(FALSE, 0);
 	app->btn_dl = gtk_button_new_with_label("Download");
 	app->btn_save = gtk_button_new_with_label("Save pic");
+	app->btn_save_all = gtk_button_new_with_label( "Save all" );
 	app->entry = gtk_entry_new();
 	app->image = gtk_image_new();
 	app->hbox2 = gtk_hbox_new(FALSE, 0);
@@ -126,6 +127,8 @@ static void put(APP *app) {
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_dl, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_save, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_save_all, 
+			TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->entry, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox2, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_prev, TRUE, TRUE, 0);
@@ -166,6 +169,70 @@ gboolean resize_window(GtkWidget *w, GdkEvent *e, APP *app) {
 	return FALSE;
 }
 
+static gboolean callback_btn_save_all(GtkWidget *widget, APP *app) 
+{
+	GError *error = NULL;
+
+	GList *temp;
+	temp = g_list_first( app->current );
+
+	// How many items to loop?
+	guint num_items = g_list_length( temp );
+	g_print( "Num items: %d\n", num_items );
+
+	guint i;
+
+	// Loop all items and save them to 0.jpg, 1.jpg and so on...
+	for( i=0; i<num_items; i++ )
+	{
+		// Create filename
+	 	char *filename = malloc( 20 );
+		sprintf( filename, "%d.jpg", i );
+
+		// Save file
+		gdk_pixbuf_save( temp->data, filename, "jpeg", &error, "quality",
+				"100", NULL );
+
+		free( filename );
+
+		// Remember to jump to next item!
+		temp = g_list_next( temp );
+	}
+
+	/*
+	// Save our full sized pixbuf to file
+	gdk_pixbuf_save(app->current->data, FILENAME, "jpeg", &error, "quality",
+			"100", NULL);
+	filename = gtk_entry_get_text(GTK_ENTRY(app->entry));
+
+	// Add JPG-extension
+	char *final_name = malloc( strlen( filename ) + 5 );
+	sprintf( final_name, "%s.jpg", filename );
+	
+	gdk_pixbuf_save(app->pixbuf, (const gchar *) final_name, "jpeg", 
+		&error, "quality", "100", NULL);
+
+	if (error != NULL) {
+		g_print("Error: %s\n", error->message);
+		error = NULL;
+		return FALSE;
+	}
+
+	// Show message dialog
+	GtkWidget *dialog;
+
+	dialog = gtk_message_dialog_new( GTK_WINDOW( app->window ), 
+		GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
+		"This image is now saved in file %s.", final_name );
+
+	gtk_window_set_title( GTK_WINDOW( dialog ), "Information" );
+	gtk_dialog_run( GTK_DIALOG( dialog ) );
+	gtk_widget_destroy( dialog );
+
+	*/
+	return FALSE;
+}
+
 static void connect_signals(APP *app) {
 	g_signal_connect(G_OBJECT(app->window), "destroy", G_CALLBACK(quit_prog),
 			app->image);
@@ -173,6 +240,9 @@ static void connect_signals(APP *app) {
 			callback_btn_dl), app);
 	g_signal_connect(G_OBJECT(app->btn_save), "clicked", G_CALLBACK(
 			callback_btn_save), app);
+	g_signal_connect( G_OBJECT( app->btn_save_all ), "clicked",
+			G_CALLBACK( callback_btn_save_all ), app );
+
 	g_signal_connect(G_OBJECT(app->window), "expose-event", G_CALLBACK(
 			resize_window), app);
 	g_signal_connect(G_OBJECT(app->btn_prev), "clicked", G_CALLBACK(
@@ -182,16 +252,7 @@ static void connect_signals(APP *app) {
 }
 
 static void makevisable(APP *app) {
-	gtk_widget_show(app->vbox);
-	gtk_widget_show(app->hbox);
-	gtk_widget_show(app->btn_dl);
-	gtk_widget_show(app->btn_save);
-	gtk_widget_show(app->entry);
-	gtk_widget_show(app->image);
-	gtk_widget_show(app->window);
-	gtk_widget_show(app->hbox2);
-	gtk_widget_show(app->btn_next);
-	gtk_widget_show(app->btn_prev);
+	gtk_widget_show_all( app->window );
 }
 
 static gboolean start_up(APP *app) {
