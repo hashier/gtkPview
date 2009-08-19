@@ -3,7 +3,7 @@
 
 typedef struct _APP {
 	GtkWidget *vbox, *hbox, *hbox2;
-	GtkWidget *btn_dl, *btn_save;
+	GtkWidget *btn_dl, *btn_save, *btn_save_all;
 	GtkWidget *entry;
 	GtkWidget *image;
 	GtkWidget *window;
