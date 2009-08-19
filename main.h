@@ -25,6 +25,9 @@ typedef struct _APP {
 	// Fullscreen or not?
 	int state;
 	int slideshow;
+
+	// Time in milliseconds in slideshow
+	guint slideshow_timeout;
 } APP;
 
 static void update_title( APP *app );
@@ -44,4 +47,6 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app);
 static gboolean callback_btn_next(GtkWidget *widget, APP *app);
 static gboolean start_up(APP *app);
 static gboolean slideshow_next( APP *app );
+void toggle_window_state( int state, APP *app );
+void show_help();
 #endif /* __main_h__ */
