@@ -75,6 +75,10 @@ int main(int argc, char **argv) {
 				// it to integer.
 				guint tmp = (guint)atoi( argv[i+1] );
 
+				// If atoi failed, keep default value
+				if( tmp == 0 )
+					tmp = app.slideshow_timeout;
+
 				// If user has given value under 1000, 
 				// then user might have meant to set how
 				// many seconds to wait instead of milliseconds.
