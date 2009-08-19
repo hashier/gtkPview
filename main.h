@@ -4,6 +4,9 @@
 #define STATE_FULLSCREEN 0
 #define STATE_NORMAL 1
 
+#define RUNNING 0
+#define STOPPED 1
+
 typedef struct _APP {
 	GtkWidget *vbox, *hbox, *hbox2;
 	GtkWidget *btn_dl, *btn_save, *btn_save_all;
@@ -21,6 +24,7 @@ typedef struct _APP {
 
 	// Fullscreen or not?
 	int state;
+	int slideshow;
 } APP;
 
 static void update_title( APP *app );

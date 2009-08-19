@@ -51,6 +51,20 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
+static gboolean slideshow_next( APP *app )
+{
+	callback_btn_dl( NULL, app );
+
+	if( app->slideshow == RUNNING )
+	{
+		g_print( "Slideshow is running...\n" );
+		return TRUE;
+	}
+
+	g_print( "Stopped slideshow\n" );
+	return FALSE;
+}
+
 // *********************************************
 //	update_title
 //
@@ -279,8 +293,18 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 			callback_btn_save_all( NULL, app );
 			break;
 
-		// By default download new image
-		default:
+		case 'd':
+
+			if( app->slideshow == RUNNING )
+				app->slideshow = STOPPED;
+			else
+				app->slideshow = RUNNING;
+
+			g_timeout_add( 3000, (GSourceFunc)slideshow_next, app );
+			break;
+
+		// Space should switch image
+		case 32:
 			callback_btn_dl( NULL, app );
 			break;
 	}
