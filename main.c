@@ -227,11 +227,15 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 			{
 				gtk_window_fullscreen( GTK_WINDOW( app->window ) );
 				app->state = STATE_FULLSCREEN;
+				gtk_widget_hide( app->hbox );
+				gtk_widget_hide( app->hbox2 );
 			}
 			else
 			{
 				gtk_window_unfullscreen( GTK_WINDOW( app->window ) );
 				app->state = STATE_NORMAL;
+				gtk_widget_show( app->hbox );
+				gtk_widget_show( app->hbox2 );
 			}
 
 			break;
