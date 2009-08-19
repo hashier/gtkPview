@@ -139,12 +139,6 @@ static void put(APP *app) {
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_save_all, 
 			TRUE, TRUE, 0);
 
-	// Set bg color
-	GdkColor color;
-	gdk_color_parse( "white", &color );
-	gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
-			&color );
-
 }
 
 gboolean resize_window(GtkWidget *w, GdkEvent *e, APP *app) {
@@ -255,8 +249,9 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 				gtk_widget_show( app->hbox );
 				gtk_widget_show( app->hbox2 );
 
+				// Back to gray
 				GdkColor color;
-				gdk_color_parse( "white", &color );
+				gdk_color_parse( "#e7e5e4", &color );
 				gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
 						&color );
 			}
