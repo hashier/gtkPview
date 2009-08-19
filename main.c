@@ -17,6 +17,36 @@
 #define PREVIOUS 0
 #define NEXT 1
 
+void toggle_window_state( int state, APP *app )
+{
+	if( state == STATE_NORMAL )
+	{
+		gtk_window_fullscreen( GTK_WINDOW( app->window ) );
+		app->state = STATE_FULLSCREEN;
+		gtk_widget_hide( app->hbox );
+		gtk_widget_hide( app->hbox2 );
+
+		// Eventbox background color is nicer when it is black
+		GdkColor color;
+		gdk_color_parse( "black", &color );
+		gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+				&color );
+	}
+	else
+	{
+		gtk_window_unfullscreen( GTK_WINDOW( app->window ) );
+		app->state = STATE_NORMAL;
+		gtk_widget_show( app->hbox );
+		gtk_widget_show( app->hbox2 );
+
+		// Back to gray
+		GdkColor color;
+		gdk_color_parse( "#e7e5e4", &color );
+		gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+				&color );
+	}
+}
+
 int main(int argc, char **argv) {
 	struct _APP app;
 
@@ -41,6 +71,21 @@ int main(int argc, char **argv) {
 
 	/* make visible */
 	makevisable(&app);
+
+	// Check cli params
+	int i;
+	for( i=0; i<argc; i++ )
+	{
+		if( strcmp( argv[i], "-f" ) == 0 )
+			toggle_window_state( STATE_NORMAL, &app );
+		else if( strcmp( argv[i], "--fullscreen" ) == 0 )
+			toggle_window_state( STATE_NORMAL, &app );
+		else if( strcmp( argv[i], "--slideshow" ) == 0 )
+		{
+			app.slideshow = RUNNING;
+			g_timeout_add( 3000, (GSourceFunc)slideshow_next, &app );
+		}
+	}
 
 	/* load first image, if available */
 	start_up(&app);
@@ -242,33 +287,9 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 
 			// To fullscreen
 			if( app->state == STATE_NORMAL )
-			{
-				gtk_window_fullscreen( GTK_WINDOW( app->window ) );
-				app->state = STATE_FULLSCREEN;
-				gtk_widget_hide( app->hbox );
-				gtk_widget_hide( app->hbox2 );
-
-				// Eventbox background color is nicer when it is black
-				GdkColor color;
-				gdk_color_parse( "black", &color );
-				gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
-						&color );
-			}
-
-			// Back to normal sized window
+				toggle_window_state( STATE_NORMAL, app );
 			else
-			{
-				gtk_window_unfullscreen( GTK_WINDOW( app->window ) );
-				app->state = STATE_NORMAL;
-				gtk_widget_show( app->hbox );
-				gtk_widget_show( app->hbox2 );
-
-				// Back to gray
-				GdkColor color;
-				gdk_color_parse( "#e7e5e4", &color );
-				gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
-						&color );
-			}
+				toggle_window_state( STATE_FULLSCREEN, app );
 			break;
 
 		// Previous image

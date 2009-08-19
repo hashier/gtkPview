@@ -43,5 +43,5 @@ static gboolean callback_btn_next(GtkWidget *widget, APP *app);
 static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app);
 static gboolean callback_btn_next(GtkWidget *widget, APP *app);
 static gboolean start_up(APP *app);
-
+static gboolean slideshow_next( APP *app );
 #endif /* __main_h__ */
