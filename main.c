@@ -7,6 +7,7 @@
 #include <glib.h>
 
 #include <curl/curl.h>
+#include <gdk/gdkkeysyms.h>
 #include "main.h"
 
 #define URL "http://tissit.teurasporsaat.org/random.php"
@@ -221,6 +222,7 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 {
 	switch( e->keyval )
 	{
+		// To fullscreen and back
 		case 'f':
 			
 			if( app->state == STATE_NORMAL )
@@ -237,7 +239,33 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 				gtk_widget_show( app->hbox );
 				gtk_widget_show( app->hbox2 );
 			}
+			break;
 
+		// Previous image
+		case 'h':
+		case GDK_Left:
+		case GDK_BackSpace:
+				callback_btn_prev( NULL, app );
+				break;
+
+		// Next image
+		case 'l':
+		case GDK_Right:
+				callback_btn_next( NULL, app );
+				break;
+
+		// Quit app
+		case 'q':
+			gtk_main_quit();
+			break;
+
+		case 's':
+			callback_btn_save_all( NULL, app );
+			break;
+
+		// By default download new image
+		default:
+			callback_btn_dl( NULL, app );
 			break;
 	}
 }
