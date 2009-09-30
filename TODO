@@ -1,5 +1,9 @@
-Ok, we have to split the functions.
+--- Bugs ---
+- Leaving slideshow loads a few images and displayes them
+- implement getopt for argument parsing
 
+
+--- TODO ---
 get_image only gets an image
 set_image only sets app->image
 callback_btn_dl calls callback_btn_dl which calls get_image and set_image
