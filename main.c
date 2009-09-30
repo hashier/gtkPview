@@ -7,6 +7,7 @@
 #include <glib.h>
 
 #include <curl/curl.h>
+#include <gdk/gdkkeysyms.h>
 #include "main.h"
 
 #define URL "http://tissit.teurasporsaat.org/random.php"
@@ -21,6 +22,7 @@ int main(int argc, char **argv) {
 
 	gtk_init(&argc, &argv);
 
+	app.state = STATE_NORMAL;
 	app.list = NULL;
 	app.current = NULL;
 
@@ -37,8 +39,67 @@ int main(int argc, char **argv) {
 	/* Connect signals */
 	connect_signals(&app);
 
+	// Default timeout is 3 seconds
+	app.slideshow_timeout = 3000;
+
 	/* make visible */
 	makevisable(&app);
+
+	// Check cli params
+	int i;
+	int start_slideshow = 0;
+
+	for( i=0; i<argc; i++ )
+	{
+		if( strcmp( argv[i], "-f" ) == 0 )
+			toggle_window_state( STATE_NORMAL, &app );
+		else if( strcmp( argv[i], "-h" ) == 0 )
+			show_help();
+		else if( strcmp( argv[i], "--help" ) == 0 )
+			show_help();
+		else if( strcmp( argv[i], "--fullscreen" ) == 0 )
+			toggle_window_state( STATE_NORMAL, &app );
+
+		// We do not want start slideshow just now, because
+		// use might have given --timeout parameter, so we
+		// first loop all params and set it later
+		else if( strcmp( argv[i], "--slideshow" ) == 0 )
+			start_slideshow = 1;
+
+		// Set timeout for slideshow
+		else if( strcmp( argv[i], "--timeout" ) == 0 )
+		{
+			if( argc >= i+1 )
+			{
+				// Get next param value and convert
+				// it to integer.
+				guint tmp = (guint)atoi( argv[i+1] );
+
+				// If atoi failed, keep default value
+				if( tmp == 0 )
+					tmp = app.slideshow_timeout;
+
+				// If user has given value under 1000, 
+				// then user might have meant to set how
+				// many seconds to wait instead of milliseconds.
+				// Just fix it.
+				if( tmp < 1000 )
+					tmp = tmp * 1000;
+
+				// Set timeout
+				app.slideshow_timeout = tmp;
+				g_print( "Timeout is %d\n", app.slideshow_timeout );
+			}
+		}
+	}
+
+	// If --slideshow was given, then start it
+	if( start_slideshow )
+	{
+		app.slideshow = RUNNING;
+		g_timeout_add( app.slideshow_timeout,
+				(GSourceFunc)slideshow_next, &app );
+	}
 
 	/* load first image, if available */
 	start_up(&app);
@@ -47,6 +108,72 @@ int main(int argc, char **argv) {
 	gtk_main();
 
 	return 0;
+}
+
+void show_help()
+{
+	g_print( "gtkPview\n\n" );
+	g_print( "USAGE: gtkPview [PARAM]\n" );
+	g_print( "Shows tits from tissit.teurasporsaat.org\n\n" );
+	g_print( "PARAMS\n" );
+	g_print( "--help or -h\t\tThis help\n" );
+	g_print( "--slideshow\t\tStart slideshow\n" );
+	g_print( "--timeout\t\tTimeout for slideshow. Under 1000 is for\n" );
+	g_print( "\t\t\tseconds, over 1000 is for milliseconds\n" );
+	g_print( "--fullscreen or -f\tGo fullscreen mode\n\n" );
+	g_print( "KEYS\n" );
+	g_print( "d\t\t\tStart/stop slideshow\n" );
+	g_print( "f\t\t\tGo fullscreen/back\n" );
+	g_print( "s\t\t\tSave all images\n" );
+	g_print( "q\t\t\tQuit application\n" );
+	g_print( "h or left\t\tPrevious image\n" );
+	g_print( "l or right\t\tNext image\n" );
+	g_print( "SPACE\t\t\tDownload new image\n\n" );
+	exit(0);
+}
+
+void toggle_window_state( int state, APP *app )
+{
+	if( state == STATE_NORMAL )
+	{
+		gtk_window_fullscreen( GTK_WINDOW( app->window ) );
+		app->state = STATE_FULLSCREEN;
+		gtk_widget_hide( app->hbox );
+		gtk_widget_hide( app->hbox2 );
+
+		// Eventbox background color is nicer when it is black
+		GdkColor color;
+		gdk_color_parse( "black", &color );
+		gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+				&color );
+	}
+	else
+	{
+		gtk_window_unfullscreen( GTK_WINDOW( app->window ) );
+		app->state = STATE_NORMAL;
+		gtk_widget_show( app->hbox );
+		gtk_widget_show( app->hbox2 );
+
+		// Back to gray
+		GdkColor color;
+		gdk_color_parse( "#e7e5e4", &color );
+		gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+				&color );
+	}
+}
+
+static gboolean slideshow_next( APP *app )
+{
+	callback_btn_dl( NULL, app );
+
+	if( app->slideshow == RUNNING )
+	{
+		g_print( "Slideshow is running...\n" );
+		return TRUE;
+	}
+
+	g_print( "Stopped slideshow\n" );
+	return FALSE;
 }
 
 // *********************************************
@@ -119,11 +246,14 @@ static void create(APP *app) {
 	app->hbox2 = gtk_hbox_new(FALSE, 0);
 	app->btn_prev = gtk_button_new_with_label("Prev pic");
 	app->btn_next = gtk_button_new_with_label("Next pic");
+	app->eventbox = gtk_event_box_new();
 }
 
 static void put(APP *app) {
 	gtk_container_add(GTK_CONTAINER(app->window), app->vbox);
-	gtk_box_pack_start(GTK_BOX(app->vbox), app->image, TRUE, TRUE, 0);
+	gtk_container_add( GTK_CONTAINER( app->eventbox ), app->image );
+
+	gtk_box_pack_start(GTK_BOX(app->vbox), app->eventbox, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_dl, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_save, TRUE, TRUE, 0);
@@ -131,8 +261,7 @@ static void put(APP *app) {
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox2, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_prev, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_next, TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_save_all, 
-			TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_save_all, TRUE, TRUE, 0);
 }
 
 gboolean resize_window(GtkWidget *w, GdkEvent *e, APP *app) {
@@ -213,6 +342,60 @@ static gboolean callback_btn_save_all( GtkWidget *widget, APP *app )
 	return FALSE;
 }
 
+static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
+{
+	switch( e->keyval )
+	{
+		// To fullscreen and back
+		case 'f':
+
+			// To fullscreen
+			if( app->state == STATE_NORMAL )
+				toggle_window_state( STATE_NORMAL, app );
+			else
+				toggle_window_state( STATE_FULLSCREEN, app );
+			break;
+
+		// Previous image
+		case 'h':
+		case GDK_Left:
+		case GDK_BackSpace:
+				callback_btn_prev( NULL, app );
+				break;
+
+		// Next image
+		case 'l':
+		case GDK_Right:
+				callback_btn_next( NULL, app );
+				break;
+
+		// Quit app
+		case 'q':
+			gtk_main_quit();
+			break;
+
+		case 's':
+			callback_btn_save_all( NULL, app );
+			break;
+
+		case 'd':
+
+			if( app->slideshow == RUNNING )
+				app->slideshow = STOPPED;
+			else
+				app->slideshow = RUNNING;
+
+			g_timeout_add( app->slideshow_timeout, 
+					(GSourceFunc)slideshow_next, app );
+			break;
+
+		// Space should switch image
+		case 32:
+			callback_btn_dl( NULL, app );
+			break;
+	}
+}
+
 static void connect_signals(APP *app) {
 	g_signal_connect(G_OBJECT(app->window), "destroy", G_CALLBACK(quit_prog),
 			app->image);
@@ -229,6 +412,10 @@ static void connect_signals(APP *app) {
 			callback_btn_prev), app);
 	g_signal_connect(G_OBJECT(app->btn_next), "clicked", G_CALLBACK(
 			callback_btn_next), app);
+
+	// Listen keypresses
+	g_signal_connect( G_OBJECT( app->window ), "key-press-event",
+			G_CALLBACK( callback_key_pressed ), app );
 }
 
 static void makevisable(APP *app) {
@@ -324,7 +511,7 @@ static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	// Add JPG-extension
 	char *final_name = malloc( strlen( filename ) + 5 );
 	sprintf( final_name, "%s.jpg", filename );
-	
+
 	gdk_pixbuf_save(app->pixbuf, (const gchar *) final_name, "jpeg", 
 		&error, "quality", "100", NULL);
 

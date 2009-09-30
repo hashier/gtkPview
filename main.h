@@ -1,9 +1,16 @@
 #ifndef __main_h__
 #define __main_h__
 
+#define STATE_FULLSCREEN 0
+#define STATE_NORMAL 1
+
+#define RUNNING 0
+#define STOPPED 1
+
 typedef struct _APP {
 	GtkWidget *vbox, *hbox, *hbox2;
 	GtkWidget *btn_dl, *btn_save, *btn_save_all;
+	GtkWidget *eventbox;
 	GtkWidget *entry;
 	GtkWidget *image;
 	GtkWidget *window;
@@ -14,6 +21,13 @@ typedef struct _APP {
 	GdkPixbuf *pixbuf;
 	GdkPixbuf *scaled;
 	GList *current;
+
+	// Fullscreen or not?
+	int state;
+	int slideshow;
+
+	// Time in milliseconds in slideshow
+	guint slideshow_timeout;
 } APP;
 
 static void update_title( APP *app );
@@ -32,5 +46,7 @@ static gboolean callback_btn_next(GtkWidget *widget, APP *app);
 static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app);
 static gboolean callback_btn_next(GtkWidget *widget, APP *app);
 static gboolean start_up(APP *app);
-
+static gboolean slideshow_next( APP *app );
+void toggle_window_state( int state, APP *app );
+void show_help();
 #endif /* __main_h__ */
