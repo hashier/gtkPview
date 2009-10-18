@@ -132,7 +132,7 @@ void show_help()
 	g_print( "q\t\t\tQuit application\n" );
 	g_print( "h or left\t\tPrevious image\n" );
 	g_print( "l or right\t\tNext image\n" );
-	g_print( "SPACE\t\t\tDownload new image\n\n" );
+	g_print( "g\t\t\tDownload new image\n\n" );
 	exit(0);
 }
 
@@ -394,7 +394,7 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 			break;
 
 		// Space should switch image
-		case 32:
+		case 'g':
 			callback_btn_dl( NULL, app );
 			break;
 	}

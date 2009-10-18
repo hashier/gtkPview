@@ -1,7 +1,6 @@
 --- Bugs ---
 - Leaving slideshow loads a few images and displayes them
 - implement getopt for argument parsing
-- Sometimes there will be 2 images downloaded...
 
 
 --- TODO ---
