@@ -8,7 +8,7 @@
 #define STOPPED 1
 
 typedef struct _APP {
-	GtkWidget *vbox, *hbox, *hbox2;
+	GtkWidget *vbox, *hbox, *hbox2, *vbox_mid, *hbox_mid;
 	GtkWidget *btn_dl, *btn_save, *btn_save_all;
 	GtkWidget *eventbox;
 	GtkWidget *entry;
@@ -28,6 +28,8 @@ typedef struct _APP {
 
 	// Time in milliseconds in slideshow
 	guint slideshow_timeout;
+
+	GtkWidget *label_text;
 } APP;
 
 static void update_title( APP *app );

@@ -251,6 +251,8 @@ static void create(APP *app) {
 	app->btn_prev = gtk_button_new_with_label("Prev pic");
 	app->btn_next = gtk_button_new_with_label("Next pic");
 	app->eventbox = gtk_event_box_new();
+	app->label_text = gtk_label_new("Save file to:");
+	app->hbox_mid = gtk_hbox_new(FALSE, 0);
 }
 
 static void put(APP *app) {
@@ -261,7 +263,9 @@ static void put(APP *app) {
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_dl, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox), app->btn_save, TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(app->hbox), app->entry, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox_mid, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(app->hbox_mid), app->label_text, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(app->hbox_mid), app->entry, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->vbox), app->hbox2, FALSE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_prev, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_next, TRUE, TRUE, 0);
