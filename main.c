@@ -10,7 +10,11 @@
 #include <gdk/gdkkeysyms.h>
 #include "main.h"
 
-#define URL "http://tissit.teurasporsaat.org/random.php"
+#if defined(PORN)
+  #define URL "http://tissit.teurasporsaat.org/random.php"
+#else
+  #define URL "http://www.davelozinski.com/cgi-bin/random_image.pl"
+#endif
 #define FILENAME "logo.jpg"
 
 // These tells if we should load next or previous image from list

@@ -12,6 +12,10 @@ LIBS = $(GTK_LIBS) $(CURL_LIBS) $(MISC_LIBS)
 
 TARGET = gtkPview
 
+ifeq ($(porn), 1)
+	GCC_COMPILER_FLAGS += -DPORN
+endif
+
 SRC_DIRS := .
 SRC_FILES := $(foreach DIR, $(SRC_DIRS), $(wildcard $(DIR)/*.c))
 OBJS := $(patsubst %.c, %.o, $(SRC_FILES))
