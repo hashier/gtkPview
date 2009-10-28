@@ -144,6 +144,7 @@ void toggle_window_state( int state, APP *app )
 		app->state = STATE_FULLSCREEN;
 		gtk_widget_hide( app->hbox );
 		gtk_widget_hide( app->hbox2 );
+		gtk_widget_hide( app->hbox_mid );
 
 		// Eventbox background color is nicer when it is black
 		GdkColor color;
@@ -157,6 +158,7 @@ void toggle_window_state( int state, APP *app )
 		app->state = STATE_NORMAL;
 		gtk_widget_show( app->hbox );
 		gtk_widget_show( app->hbox2 );
+		gtk_widget_show( app->hbox_mid );
 
 		// Back to gray
 		GdkColor color;
