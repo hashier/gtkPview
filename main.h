@@ -29,6 +29,8 @@ typedef struct _APP {
 	// Time in milliseconds in slideshow
 	guint slideshow_timeout;
 
+	guint width, height;
+
 	GtkWidget *label_text;
 } APP;
 
@@ -51,4 +53,6 @@ static gboolean start_up(APP *app);
 static gboolean slideshow_next( APP *app );
 void toggle_window_state( int state, APP *app );
 void show_help();
+gboolean resize_window( GtkWidget *w, GdkEvent *e, APP *app );
+void get_scaled(APP *app, char direction);
 #endif /* __main_h__ */

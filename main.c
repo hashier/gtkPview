@@ -20,6 +20,7 @@
 // These tells if we should load next or previous image from list
 #define PREVIOUS 0
 #define NEXT 1
+#define CURRENT 2
 
 int main(int argc, char **argv) {
 	struct _APP app;
@@ -33,6 +34,9 @@ int main(int argc, char **argv) {
 	// This must be NULL if there is no loaded pixbuf at all.
 	app.scaled = NULL;
 	app.pixbuf = NULL;
+
+	app.width = 0;
+	app.height = 0;
 
 	/* creating stuff */
 	create(&app);
@@ -167,6 +171,7 @@ void toggle_window_state( int state, APP *app )
 				&color );
 	}
 }
+
 
 static gboolean slideshow_next( APP *app )
 {
@@ -406,6 +411,20 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 	}
 }
 
+gboolean changed_state( GtkWidget *w, GdkEventConfigure *e, APP *app )
+{
+	// Read application REAL width and height, not
+	// the cached one (what we will get with gtk_window_get_size).
+	app->width = e->width;
+	app->height = e->height;
+
+	// Create scaled pixbuf and set it to image.
+	get_scaled( app, CURRENT );
+	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
+
+	return FALSE;
+}
+
 static void connect_signals(APP *app) {
 	g_signal_connect(G_OBJECT(app->window), "destroy", G_CALLBACK(quit_prog),
 			app->image);
@@ -415,6 +434,11 @@ static void connect_signals(APP *app) {
 			callback_btn_save), app);
 	g_signal_connect( G_OBJECT( app->btn_save_all ), "clicked",
 			G_CALLBACK( callback_btn_save_all ), app );
+
+	// This is required when we want to switch fullscreen and
+	// directly scale loaded image to fill the whole window area.
+	g_signal_connect( G_OBJECT( app->window ), "configure_event", G_CALLBACK(
+			changed_state), app);
 
 	g_signal_connect(G_OBJECT(app->window), "expose-event", G_CALLBACK(
 			resize_window), app);
@@ -563,13 +587,23 @@ void get_scaled(APP *app, char direction) {
 
 	// Read window size, so we know what sized our
 	// scaled pixbuf should be.
-	gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
+	if( app->width != 0 )
+	{
+		gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
+	}
+	else
+	{
+		width = app->width;
+		height = app->height;
+	}
 
 	// Should we load next or previous item from list?
 	if (direction == PREVIOUS)
 		app->current = g_list_previous(app->current);
-	else
+	else if( direction == NEXT )
 		app->current = g_list_next(app->current);
+	else
+		app->current = app->current;
 
 	// Save our full sized pixbuf to file
 	gdk_pixbuf_save(app->current->data, FILENAME, "jpeg", &error, "quality",
