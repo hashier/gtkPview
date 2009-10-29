@@ -10,8 +10,12 @@
 #include <gdk/gdkkeysyms.h>
 #include "main.h"
 
-#if defined(PORN)
+#if defined(TITS)
   #define URL "http://tissit.teurasporsaat.org/random.php"
+#elif defined(APINAPORN)
+  #define URL "http://stargazers.nor.fi/random_image/apinaporn.cgi"
+#elif defined(APINA)
+  #define URL "http://stargazers.nor.fi/random_image/apina.cgi"
 #else
   #define URL "http://www.davelozinski.com/cgi-bin/random_image.pl"
 #endif
@@ -296,16 +300,17 @@ gboolean resize_window(GtkWidget *w, GdkEvent *e, APP *app) {
 		app->last_height = height;
 
 		// Save current pixbuf to file
-		gdk_pixbuf_save(app->pixbuf, FILENAME, "jpeg", &error, "quality",
-				"100", NULL);
+		gdk_pixbuf_save(app->pixbuf, FILENAME, "jpeg", &error, 
+				"quality", "100", NULL);
 
 		// Free memory of old scaled pixbuf if necessary
 		if (app->scaled != NULL)
 			g_object_unref(app->scaled);
 
 		// Load pixbuf scaled
-		app->scaled = gdk_pixbuf_new_from_file_at_scale(FILENAME, width,
-				height, TRUE, &error);
+		app->scaled = gdk_pixbuf_new_from_file_at_scale(
+			FILENAME, width, height, 
+			TRUE, &error);
 
 		gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 	}

@@ -16,6 +16,18 @@ ifeq ($(porn), 1)
 	GCC_COMPILER_FLAGS += -DPORN
 endif
 
+ifeq ($(apina), 1)
+	GCC_COMPILER_FLAGS += -DAPINA
+endif
+
+ifeq ($(apinaporn), 1)
+	GCC_COMPILER_FLAGS += -DAPINAPORN
+endif
+
+ifeq ($(tits), 1)
+	GCC_COMPILER_FLAGS += -DTITS
+endif
+
 SRC_DIRS := .
 SRC_FILES := $(foreach DIR, $(SRC_DIRS), $(wildcard $(DIR)/*.c))
 OBJS := $(patsubst %.c, %.o, $(SRC_FILES))
