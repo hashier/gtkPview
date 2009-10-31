@@ -25,6 +25,7 @@ typedef struct _APP {
 	// Fullscreen or not?
 	int state;
 	int slideshow;
+	int slideshow_stopped_on_the_fly;
 
 	// Time in milliseconds in slideshow
 	guint slideshow_timeout;

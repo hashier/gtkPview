@@ -57,6 +57,14 @@ int main(int argc, char **argv) {
 	/* make visible */
 	makevisable(&app);
 
+	// This is used to tell if slideshow is stopped when
+	// we download new image. If it is, then we do not want to
+	// show downloaded image.
+	// 2 = Not set yet, no slidehsow is running
+	// 1 = Stopped on the fly
+	// 0 = Not stopped, slideshow still goes on
+	app.slideshow_stopped_on_the_fly = 2;
+
 	// Check cli params
 	int i;
 	int start_slideshow = 0;
@@ -400,16 +408,25 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 
 		case 'd':
 
+			// If slideshow is currently running, then we should
+			// save "slideshow_stopped_on_the_fly" variable to 1.
+			// Then we know that we should not show downloaded image.
 			if( app->slideshow == RUNNING )
+			{
+				app->slideshow_stopped_on_the_fly = 1;
 				app->slideshow = STOPPED;
+			}
 			else
+			{
 				app->slideshow = RUNNING;
+				app->slideshow_stopped_on_the_fly = 2;
 
-			g_timeout_add( app->slideshow_timeout, 
-					(GSourceFunc)slideshow_next, app );
+				g_timeout_add( app->slideshow_timeout, 
+						(GSourceFunc)slideshow_next, app );
+			}
 			break;
 
-		// Space should switch image
+		// 'g' should switch image
 		case 'g':
 			callback_btn_dl( NULL, app );
 			break;
@@ -537,8 +554,13 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 }
 
 static gboolean callback_btn_dl(GtkWidget *widget, APP *app) {
-	if (get_new_image(app)) {
-		set_image(NULL, NULL, app);
+	if (get_new_image(app)) 
+	{
+		if( app->slideshow_stopped_on_the_fly != 1 )
+		{
+			set_image(NULL, NULL, app);
+			app->slideshow_stopped_on_the_fly = 2;
+		}
 	}
 	update_title( app );
 	return FALSE;
