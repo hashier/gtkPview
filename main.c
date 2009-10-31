@@ -424,8 +424,11 @@ gboolean changed_state( GtkWidget *w, GdkEventConfigure *e, APP *app )
 	app->height = e->height;
 
 	// Create scaled pixbuf and set it to image.
-	get_scaled( app, CURRENT );
-	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
+	if( app->pixbuf != NULL )
+	{
+		get_scaled( app, CURRENT );
+		gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
+	}
 
 	return FALSE;
 }
@@ -470,7 +473,7 @@ static gboolean start_up(APP *app) {
 		// Does image file exists?
 		FILE *fp = fopen(FILENAME, "r");
 		if (fp == NULL) {
-			g_print("Can't open %s", FILENAME);
+			g_print("Can't open %s\n", FILENAME);
 			return FALSE;
 		}
 		fclose(fp);
