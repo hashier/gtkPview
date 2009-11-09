@@ -420,6 +420,8 @@ gboolean changed_state( GtkWidget *w, GdkEventConfigure *e, APP *app )
 
 	// Read application REAL width and height, not
 	// the cached one (what we will get with gtk_window_get_size).
+	// see: http://library.gnome.org/devel/gtk/unstable/GtkWindow.html#gtk-window-get-size
+	// for more information about that
 	app->width = e->width;
 	app->height = e->height;
 
