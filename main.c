@@ -21,11 +21,6 @@
 #endif
 #define FILENAME "logo.jpg"
 
-// These tells if we should load next or previous image from list
-#define PREVIOUS 0
-#define NEXT 1
-#define CURRENT 2
-
 int main(int argc, char **argv) {
 	struct _APP app;
 
@@ -428,7 +423,7 @@ gboolean changed_state( GtkWidget *w, GdkEventConfigure *e, APP *app )
 	// Create scaled pixbuf and set it to image.
 	if( app->pixbuf != NULL )
 	{
-		get_scaled( app, CURRENT );
+		get_scaled( app, DIR_CURRENT );
 		gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 	}
 
@@ -616,9 +611,9 @@ void get_scaled(APP *app, char direction) {
 	}
 
 	// Should we load next or previous item from list?
-	if (direction == PREVIOUS)
+	if (direction == DIR_PREVIOUS)
 		app->current = g_list_previous(app->current);
-	else if( direction == NEXT )
+	else if( direction == DIR_NEXT )
 		app->current = g_list_next(app->current);
 	else
 		app->current = app->current;
@@ -648,7 +643,7 @@ static gboolean callback_btn_prev(GtkWidget *widget, APP *app) {
 	}
 
 	// Read scaled image to app->scaled pixbuf
-	get_scaled(app, PREVIOUS);
+	get_scaled(app, DIR_PREVIOUS);
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 
 	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
@@ -663,7 +658,7 @@ static gboolean callback_btn_next(GtkWidget *widget, APP *app) {
 	}
 
 	// Read to app->scaled scaled pixbuf.
-	get_scaled(app, NEXT);
+	get_scaled(app, DIR_NEXT);
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 	update_title( app );
 

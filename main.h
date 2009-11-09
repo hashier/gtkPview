@@ -34,6 +34,13 @@ typedef struct _APP {
 	GtkWidget *label_text;
 } APP;
 
+// These tells if we should load next or previous image from list
+enum _Direction {
+	DIR_PREVIOUS = 0,
+	DIR_NEXT,
+	DIR_CURRENT
+} Direction;
+
 static void update_title( APP *app );
 static gboolean callback_btn_dl(GtkWidget *widget, APP *app);
 static gboolean callback_btn_save(GtkWidget *widget, APP *app);
@@ -55,4 +62,5 @@ void toggle_window_state( int state, APP *app );
 void show_help();
 gboolean resize_window( GtkWidget *w, GdkEvent *e, APP *app );
 void get_scaled(APP *app, char direction);
+
 #endif /* __main_h__ */
