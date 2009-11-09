@@ -148,7 +148,8 @@ void show_help()
 	g_print( "q\t\t\tQuit application\n" );
 	g_print( "h or left\t\tPrevious image\n" );
 	g_print( "l or right\t\tNext image\n" );
-	g_print( "g\t\t\tDownload new image\n\n" );
+	g_print( "g\t\t\tDownload new image\n" );
+	g_print( "?\t\t\tShow keybindings\n\n" );
 	exit(0);
 }
 
@@ -291,41 +292,6 @@ static void put(APP *app) {
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_save_all, TRUE, TRUE, 0);
 }
 
-gboolean resize_window(GtkWidget *w, GdkEvent *e, APP *app) {
-	if (app->pixbuf != NULL) {
-		GError *error = NULL;
-		gint width, height;
-		gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
-
-		// If window size hasn't changed, then we don't want
-		// to scale pixbuf again and set it back, because image
-		// should be same sized as before. Just return.
-		if (app->last_width == width && app->last_height == height)
-			return FALSE;
-
-		// Keep current window size in structure memory!
-		app->last_width = width;
-		app->last_height = height;
-
-		// Save current pixbuf to file
-		gdk_pixbuf_save(app->pixbuf, FILENAME, "jpeg", &error, 
-				"quality", "100", NULL);
-
-		// Free memory of old scaled pixbuf if necessary
-		if (app->scaled != NULL)
-			g_object_unref(app->scaled);
-
-		// Load pixbuf scaled
-		app->scaled = gdk_pixbuf_new_from_file_at_scale(
-			FILENAME, width, height, 
-			TRUE, &error);
-
-		gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
-	}
-
-	return FALSE;
-}
-
 static gboolean callback_btn_save_all( GtkWidget *widget, APP *app ) 
 {
 	GError *error = NULL;
@@ -430,11 +396,28 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 		case 'g':
 			callback_btn_dl( NULL, app );
 			break;
+		case '?':
+			g_print( "d\t\t\tStart/stop slideshow\n" );
+			g_print( "f\t\t\tGo fullscreen/back\n" );
+			g_print( "s\t\t\tSave all images\n" );
+			g_print( "q\t\t\tQuit application\n" );
+			g_print( "h or left\t\tPrevious image\n" );
+			g_print( "l or right\t\tNext image\n" );
+			g_print( "g\t\t\tDownload new image\n" );
+			g_print( "?\t\t\tShow keybindings\n\n" );
+			break;
 	}
 }
 
 gboolean changed_state( GtkWidget *w, GdkEventConfigure *e, APP *app )
 {
+	// If window size hasn't changed, then we don't want
+	// to scale pixbuf again and set it back, because image
+	// should be same sized as before. Just return.
+	if (app->width == e->width && app->height == e->height) {
+		return FALSE;
+	}
+
 	// Read application REAL width and height, not
 	// the cached one (what we will get with gtk_window_get_size).
 	app->width = e->width;
@@ -465,8 +448,10 @@ static void connect_signals(APP *app) {
 	g_signal_connect( G_OBJECT( app->window ), "configure_event", G_CALLBACK(
 			changed_state), app);
 
+	/* Keept for recollection
 	g_signal_connect(G_OBJECT(app->window), "expose-event", G_CALLBACK(
 			resize_window), app);
+	*/
 	g_signal_connect(G_OBJECT(app->btn_prev), "clicked", G_CALLBACK(
 			callback_btn_prev), app);
 	g_signal_connect(G_OBJECT(app->btn_next), "clicked", G_CALLBACK(
@@ -617,8 +602,9 @@ void get_scaled(APP *app, char direction) {
 
 	// Read window size, so we know what sized our
 	// scaled pixbuf should be.
-	if( app->width != 0 )
+	if( app->width == 0 )
 	{
+		g_print("test\n");
 		gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
 	}
 	else
