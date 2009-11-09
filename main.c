@@ -305,7 +305,7 @@ static gboolean callback_btn_save_all( GtkWidget *widget, APP *app )
 	{
 		// Create filename
 	 	char *filename = malloc( 20 );
-		sprintf( filename, "%d.jpg", i );
+		sprintf( filename, "%03d.jpg", i );
 
 		// Save file
 		gdk_pixbuf_save( temp->data, filename, "jpeg", &error, "quality",
