@@ -1,7 +1,5 @@
 --- Bugs ---
-- Leaving slideshow loads a few images and displayes them
 - implement getopt for argument parsing
-
 
 --- TODO ---
 get_image only gets an image
