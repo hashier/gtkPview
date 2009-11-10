@@ -8,6 +8,9 @@
 #define STOPPED 1
 
 typedef struct _APP {
+	// hbox     -> DL / Save Pic
+	// hbox2    -> Save to file
+	// hbox_mid -> Prev/Next/Save all
 	GtkWidget *vbox, *hbox, *hbox2, *vbox_mid, *hbox_mid;
 	GtkWidget *btn_dl, *btn_save, *btn_save_all;
 	GtkWidget *eventbox;

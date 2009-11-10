@@ -144,6 +144,7 @@ void show_help()
 	g_print( "h or left\t\tPrevious image\n" );
 	g_print( "l or right\t\tNext image\n" );
 	g_print( "g\t\t\tDownload new image\n" );
+	g_print( "b\t\t\tBoss key\n" );
 	g_print( "?\t\t\tShow keybindings\n\n" );
 	exit(0);
 }
@@ -370,7 +371,6 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 			break;
 
 		case 'd':
-
 			// If slideshow is currently running, then we should
 			// save "slideshow_stopped_on_the_fly" variable to 1.
 			// Then we know that we should not show downloaded image.
@@ -393,6 +393,7 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 		case 'g':
 			callback_btn_dl( NULL, app );
 			break;
+
 		case '?':
 			g_print( "d\t\t\tStart/stop slideshow\n" );
 			g_print( "f\t\t\tGo fullscreen/back\n" );
@@ -401,8 +402,16 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 			g_print( "h or left\t\tPrevious image\n" );
 			g_print( "l or right\t\tNext image\n" );
 			g_print( "g\t\t\tDownload new image\n" );
+			g_print( "b\t\t\tBoss key\n" );
 			g_print( "?\t\t\tShow keybindings\n\n" );
 			break;
+
+		case 'b':
+			if ( GTK_WIDGET_VISIBLE( app->image) )
+				gtk_widget_hide( app->image);
+			else
+				gtk_widget_show( app->image);
+
 	}
 }
 
