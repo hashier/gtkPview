@@ -52,6 +52,7 @@ static void create(APP *app);
 static void makevisable(APP *app);
 static void put(APP *app);
 static int get_new_image(APP *app);
+static gboolean addImageToList( APP *app);
 static gboolean callback_btn_prev(GtkWidget *widget, APP *app);
 static gboolean callback_btn_next(GtkWidget *widget, APP *app);
 static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app);

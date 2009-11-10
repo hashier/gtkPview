@@ -152,17 +152,17 @@ void toggle_window_state( int state, APP *app )
 {
 	if( state == STATE_NORMAL )
 	{
-		gtk_window_fullscreen( GTK_WINDOW( app->window ) );
-		app->state = STATE_FULLSCREEN;
-		gtk_widget_hide( app->hbox );
-		gtk_widget_hide( app->hbox2 );
-		gtk_widget_hide( app->hbox_mid );
-
 		// Eventbox background color is nicer when it is black
 		GdkColor color;
 		gdk_color_parse( "black", &color );
-		gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+		gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL,
 				&color );
+
+		gtk_widget_hide( app->hbox );
+		gtk_widget_hide( app->hbox2 );
+		gtk_widget_hide( app->hbox_mid );
+		gtk_window_fullscreen( GTK_WINDOW( app->window ) );
+		app->state = STATE_FULLSCREEN;
 	}
 	else
 	{
@@ -247,6 +247,8 @@ static int get_new_image(APP *app) {
 	curl_easy_perform(curl_handle);
 	fclose(imagefile);
 	curl_easy_cleanup(curl_handle);
+
+	addImageToList( app);
 
 	return TRUE;
 }
@@ -500,10 +502,13 @@ static gboolean start_up(APP *app) {
 			return FALSE;
 		}
 	}
+
+	update_title( app );
+
 	return FALSE;
 }
 
-static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
+static gboolean addImageToList( APP *app) {
 	gint width, height;
 	GError *error = NULL;
 
@@ -527,16 +532,23 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 	app->list = g_list_append(app->list, app->pixbuf);
 	app->current = g_list_nth(app->list, g_list_index(app->list, app->pixbuf));
 
+	return FALSE;
+}
+
+static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
+
 	// Put scaled image here
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 
+	update_title( app );
 	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
 
 	return FALSE;
 }
 
 static gboolean callback_btn_dl(GtkWidget *widget, APP *app) {
-	if (get_new_image(app)) 
+
+	if (get_new_image(app))
 	{
 		if( app->slideshow_stopped_on_the_fly != 1 )
 		{
@@ -544,7 +556,6 @@ static gboolean callback_btn_dl(GtkWidget *widget, APP *app) {
 			app->slideshow_stopped_on_the_fly = 2;
 		}
 	}
-	update_title( app );
 	return FALSE;
 }
 
@@ -601,7 +612,6 @@ void get_scaled(APP *app, char direction) {
 	// scaled pixbuf should be.
 	if( app->width == 0 )
 	{
-		g_print("test\n");
 		gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
 	}
 	else
@@ -644,25 +654,21 @@ static gboolean callback_btn_prev(GtkWidget *widget, APP *app) {
 
 	// Read scaled image to app->scaled pixbuf
 	get_scaled(app, DIR_PREVIOUS);
-	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
-
-	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
-	update_title( app );
+	set_image( NULL, NULL, app);
 
 	return TRUE;
 }
 
 static gboolean callback_btn_next(GtkWidget *widget, APP *app) {
 	if (g_list_next(app->current) == NULL) {
-		return FALSE;
+		// On last image, but try to get the next -> dl a new one
+		get_new_image(app);
+	} else {
+		// Read to app->scaled scaled pixbuf.
+		get_scaled(app, DIR_NEXT);
 	}
 
-	// Read to app->scaled scaled pixbuf.
-	get_scaled(app, DIR_NEXT);
-	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
-	update_title( app );
-
-	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
+	set_image( NULL, NULL, app);
 
 	return FALSE;
 }
