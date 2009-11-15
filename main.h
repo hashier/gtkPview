@@ -62,6 +62,7 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app);
 static gboolean callback_btn_next(GtkWidget *widget, APP *app);
 static gboolean start_up(APP *app);
 static gboolean slideshow_next( APP *app );
+static gboolean callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app );
 void toggle_window_state( int state, APP *app );
 void show_help();
 gboolean resize_window( GtkWidget *w, GdkEvent *e, APP *app );

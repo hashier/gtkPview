@@ -334,8 +334,19 @@ static gboolean callback_btn_save_all( GtkWidget *widget, APP *app )
 	return FALSE;
 }
 
-static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
+static gboolean callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 {
+	if ( GTK_WIDGET_HAS_FOCUS( app->entry) ) {
+		// The value returned from this function indicates whether
+		// the event should be propagated further by the GTK event
+		// handling mechanism. Returning TRUE indicates that the event
+		// has been handled, and that it should not propagate further.
+		// Returning FALSE continues the normal event handling. See
+		// the section on Advanced Event and Signal Handling for more
+		// details on this propagation process.
+		// http://www.gtk.org/tutorial1.2/gtk_tut-18.html#sec_Adv_Events_and_Signals
+		return FALSE;
+	} else {
 	switch( e->keyval )
 	{
 		// To fullscreen and back
@@ -384,7 +395,7 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 				app->slideshow = RUNNING;
 				app->slideshow_stopped_on_the_fly = 2;
 
-				g_timeout_add( app->slideshow_timeout, 
+				g_timeout_add( app->slideshow_timeout,
 						(GSourceFunc)slideshow_next, app );
 			}
 			break;
@@ -413,6 +424,8 @@ static void callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 				gtk_widget_show( app->image);
 
 	}
+}
+return FALSE;
 }
 
 gboolean changed_state( GtkWidget *w, GdkEventConfigure *e, APP *app )
