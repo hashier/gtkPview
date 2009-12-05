@@ -17,9 +17,26 @@
 #elif defined(APINA)
   #define URL "http://stargazers.nor.fi/random_image/apina.cgi"
 #else
-  #define URL "http://stargazers.nor.fi/random_image/fukung.cgi"
+  #define URL "http://localhost/~hashier/relpub_2/schwerkraft.gif"
 #endif
 #define FILENAME "logo.jpg"
+
+#define DEBUG
+
+#ifndef DEBUG
+  #define printDebugMsg(msg) ((void)0)
+  #define printDebugMsgv(msg) ((void)0)
+#else
+  #define printDebugMsg(msg) (printDebug(msg))
+  #define printDebugMsgv(msg) (printDebugv(msg, __FILE__, __LINE__))
+#endif
+
+void printDebugv( const char *msg, const char *file, const int line) {
+	fprintf(stderr, "%s : line %d in %s\n", msg, line, file);
+}
+void printDebug( const char *msg) {
+	fprintf(stderr, "%s\n", msg);
+}
 
 int main(int argc, char **argv) {
 	struct _APP app;
@@ -511,7 +528,7 @@ static gboolean start_up(APP *app) {
 		app->scaled = gdk_pixbuf_new_from_file_at_scale(FILENAME, width,
 				height, TRUE, &error);
 
-		g_print("Startup loaded picture 0\n");
+		g_print("Startup loaded picture 1\n");
 
 		// Create first list element
 		// We save full sized pixbuf
@@ -544,17 +561,17 @@ static gboolean addImageToList( APP *app) {
 	app->scaled = gdk_pixbuf_new_from_file_at_scale(FILENAME, width, height,
 			TRUE, &error);
 
+	// We must add full sized pixbuf to list
+	app->list = g_list_append(app->list, app->pixbuf);
+	app->current = g_list_nth(app->list, g_list_index(app->list, app->pixbuf));
+
 	if (error != NULL) {
 		g_print("Error: %s\n", error->message);
 		error = NULL;
 		return FALSE;
 	}
 
-	// We must add full sized pixbuf to list
-	app->list = g_list_append(app->list, app->pixbuf);
-	app->current = g_list_nth(app->list, g_list_index(app->list, app->pixbuf));
-
-	return FALSE;
+	return TRUE;
 }
 
 static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
@@ -563,7 +580,7 @@ static gboolean set_image(GtkWidget *widget, GdkEventButton *event, APP *app) {
 	gtk_image_set_from_pixbuf(GTK_IMAGE(app->image), app->scaled);
 
 	update_title( app );
-	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf));
+	g_print("Showing pic number: %u\n", g_list_index(app->list, app->pixbuf) +1);
 
 	return FALSE;
 }
