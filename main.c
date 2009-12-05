@@ -17,7 +17,7 @@
 #elif defined(APINA)
   #define URL "http://stargazers.nor.fi/random_image/apina.cgi"
 #else
-  #define URL "http://localhost/~hashier/relpub_2/schwerkraft.gif"
+  #define URL "http://stargazers.nor.fi/random_image/fukung.cgi"
 #endif
 #define FILENAME "logo.jpg"
 
