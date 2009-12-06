@@ -601,14 +601,27 @@ static gboolean callback_btn_dl(GtkWidget *widget, APP *app) {
 static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	GError *error = NULL;
 	const gchar *filename;
+	GtkWidget *dialog;
 
 	filename = gtk_entry_get_text(GTK_ENTRY(app->entry));
+
+	if ( !strcmp( filename, "") ) {
+		// Show error dialog
+		dialog = gtk_message_dialog_new( GTK_WINDOW( app->window ),
+				GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+				"Please specify a filename" );
+
+		gtk_window_set_title( GTK_WINDOW( dialog ), "Filename missing" );
+		gtk_dialog_run( GTK_DIALOG( dialog ) );
+		gtk_widget_destroy( dialog );
+		return FALSE;
+	}
 
 	// Add JPG-extension
 	char *final_name = malloc( strlen( filename ) + 5 );
 	sprintf( final_name, "%s.jpg", filename );
 
-	gdk_pixbuf_save(app->pixbuf, (const gchar *) final_name, "jpeg", 
+	gdk_pixbuf_save(app->pixbuf, (const gchar *) final_name, "jpeg",
 		&error, "quality", "100", NULL);
 
 	if (error != NULL) {
@@ -618,9 +631,7 @@ static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	}
 
 	// Show message dialog
-	GtkWidget *dialog;
-
-	dialog = gtk_message_dialog_new( GTK_WINDOW( app->window ), 
+	dialog = gtk_message_dialog_new( GTK_WINDOW( app->window ),
 		GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
 		"This image is now saved in file %s.", final_name );
 
@@ -628,7 +639,7 @@ static gboolean callback_btn_save(GtkWidget *widget, APP *app) {
 	gtk_dialog_run( GTK_DIALOG( dialog ) );
 	gtk_widget_destroy( dialog );
 
-	return FALSE;
+	return TRUE;
 }
 
 // *********************************************
