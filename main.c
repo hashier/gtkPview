@@ -498,6 +498,9 @@ static void connect_signals(APP *app) {
 	// Listen keypresses
 	g_signal_connect( G_OBJECT( app->window ), "key-press-event",
 			G_CALLBACK( callback_key_pressed ), app );
+
+	g_signal_connect(G_OBJECT(app->entry), "activate", G_CALLBACK(
+			callback_btn_save), app);
 }
 
 static void makevisable(APP *app) {
