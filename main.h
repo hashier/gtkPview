@@ -1,9 +1,6 @@
 #ifndef __main_h__
 #define __main_h__
 
-#define STATE_FULLSCREEN 0
-#define STATE_NORMAL 1
-
 #define RUNNING 0
 #define STOPPED 1
 
@@ -36,6 +33,11 @@ typedef struct _APP {
 
 	GtkWidget *label_text;
 } APP;
+
+enum _State {
+	STATE_FULLSCREEN,
+	STATE_NORMAL
+} State;
 
 // These tells if we should load next or previous image from list
 enum _Direction {

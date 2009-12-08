@@ -307,7 +307,7 @@ static void put(APP *app) {
 	gtk_box_pack_start(GTK_BOX(app->hbox2), app->btn_save_all, TRUE, TRUE, 0);
 }
 
-static gboolean callback_btn_save_all( GtkWidget *widget, APP *app ) 
+static gboolean callback_btn_save_all( GtkWidget *widget, APP *app )
 {
 	GError *error = NULL;
 
@@ -439,6 +439,12 @@ static gboolean callback_key_pressed( GtkWidget *w, GdkEventKey *e, APP *app )
 				gtk_widget_hide( app->image);
 			else
 				gtk_widget_show( app->image);
+			break;
+
+		case GDK_space:
+			if ( app->state == STATE_FULLSCREEN )
+				callback_btn_dl( NULL, app );
+			break;
 
 	}
 }
