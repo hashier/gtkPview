@@ -16,7 +16,7 @@ SET( gtkPview_SRCS
      main.c )
 
 
-find_package(GTK2)
+find_package(GTK2 COMPONENTS gtk)
 find_package(CURL)
 
 INCLUDE_DIRECTORIES(
