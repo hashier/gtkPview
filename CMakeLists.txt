@@ -26,20 +26,18 @@ INCLUDE_DIRECTORIES(
 )
 
 # possible options
-set(OPTLIST porn apina apinaporn tits)
-# default choice
-set(SELECTED_OPT tits)
-# set the one we have in list
-foreach(OPT ${OPTLIST})
-  if(${${OPT}})
-    set(SELECTED_OPT ${OPT})
-  endif()
-endforeach(OPT)
+set(OPTLIST PORN APINA APINAPORN TITS)
 # remove all
 remove_definitions(${OPTLIST})
-# add the selected
-if(${SELECTED_OPT})
-  add_definitions(-D${SELECTED_OPT})
+# Always use the first one that occurs on the cmd line
+if(tits)
+  add_definitions(-DTITS)
+elseif(porn)
+  add_definitions(-DPORN)
+elseif(apinaporn)
+  add_definitions(-DAPINAPORN)
+elseif(apina)
+  add_definitions(-DAPINA)
 endif()
 
 
