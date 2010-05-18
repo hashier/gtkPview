@@ -25,6 +25,24 @@ INCLUDE_DIRECTORIES(
   ${CURL_INCLUDE_DIR}
 )
 
+# possible options
+set(OPTLIST porn apina apinaporn tits)
+# default choice
+set(SELECTED_OPT tits)
+# set the one we have in list
+foreach(OPT ${OPTLIST})
+  if(${${OPT}})
+    set(SELECTED_OPT ${OPT})
+  endif()
+endforeach(OPT)
+# remove all
+remove_definitions(${OPTLIST})
+# add the selected
+if(${SELECTED_OPT})
+  add_definitions(-D${SELECTED_OPT})
+endif()
+
+
 ADD_EXECUTABLE( ${PROJECT_NAME} ${gtkPview_SRCS} )
 TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${GTK2_LIBRARIES} ${CURL_LIBRARIES} )
 
