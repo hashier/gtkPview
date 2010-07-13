@@ -21,7 +21,6 @@ find_package(GTK2 COMPONENTS gtk)
 find_package(CURL)
 
 INCLUDE_DIRECTORIES(
-	#  /usr/include
   ${GTK2_INCLUDE_DIRS}
   ${CURL_INCLUDE_DIR}
 )
