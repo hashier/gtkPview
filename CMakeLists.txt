@@ -12,7 +12,8 @@ PROJECT(${PROJECT_NAME})
 
 SET(CMAKE_CXX_FLAGS "-g")
 SET(CMAKE_CXX_FLAGS_DEBUG)
-SET( gtkPview_SRCS
+
+SET( ${PROJECT_NAME}_SRCS
      main.c )
 
 
@@ -20,7 +21,7 @@ find_package(GTK2 COMPONENTS gtk)
 find_package(CURL)
 
 INCLUDE_DIRECTORIES(
-  /usr/include
+	#  /usr/include
   ${GTK2_INCLUDE_DIRS}
   ${CURL_INCLUDE_DIR}
 )
@@ -41,6 +42,6 @@ elseif(apina)
 endif()
 
 
-ADD_EXECUTABLE( ${PROJECT_NAME} ${gtkPview_SRCS} )
+ADD_EXECUTABLE( ${PROJECT_NAME} ${${PROJECT_NAME}_SRCS} )
 TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${GTK2_LIBRARIES} ${CURL_LIBRARIES} )
 
