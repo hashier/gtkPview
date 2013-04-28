@@ -530,12 +530,8 @@ static gboolean start_up(APP *app) {
 		// Read window size, so we can scale image
 		gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
 
-		// Full sized pixbuf
-		app->pixbuf = gdk_pixbuf_new_from_file(FILENAME, &error);
-
-		// Scaled pixbuf
-		app->scaled = gdk_pixbuf_new_from_file_at_scale(FILENAME, width,
-				height, TRUE, &error);
+		// fill pixbufs
+		fill_pixbufs(app);
 
 		g_print("Startup loaded picture 1\n");
 
@@ -563,12 +559,8 @@ static gboolean addImageToList( APP *app) {
 	// Read window size.
 	gtk_window_get_size(GTK_WINDOW(app->window), &width, &height);
 
-	// Create fullsized pixbuf
-	app->pixbuf = gdk_pixbuf_new_from_file(FILENAME, &error);
-
-	// Create scaled pixbuf
-	app->scaled = gdk_pixbuf_new_from_file_at_scale(FILENAME, width, height,
-			TRUE, &error);
+	// fill pixbufs
+	fill_pixbufs(app);
 
 	// We must add full sized pixbuf to list
 	app->list = g_list_append(app->list, app->pixbuf);
@@ -699,8 +691,10 @@ void get_scaled(APP *app, char direction) {
 	// Now we can load it scaled from file.
 	// I think that there can be easier way somehow to load
 	// it and also keep aspect ratio, but until I find it I use this...
-	app->scaled = gdk_pixbuf_new_from_file_at_scale(FILENAME, width, height,
-			TRUE, &error);
+	GtkAllocation imageSize;
+	gtk_widget_get_allocation(app->eventbox, &imageSize);
+
+	app->scaled = gdk_pixbuf_new_from_file_at_scale(FILENAME, imageSize.width, imageSize.height, TRUE, &error);
 	app->pixbuf = app->current->data;
 }
 
@@ -730,4 +724,16 @@ static gboolean callback_btn_next(GtkWidget *widget, APP *app) {
 	set_image( NULL, NULL, app);
 
 	return FALSE;
+}
+
+void fill_pixbufs(APP *app) {
+	GError *error = NULL;
+	GtkAllocation imageSize;
+	gtk_widget_get_allocation(app->eventbox, &imageSize);
+
+	if (app->scaled != NULL)
+		g_object_unref(app->scaled);
+
+	app->pixbuf = gdk_pixbuf_new_from_file(FILENAME, &error);
+	app->scaled = gdk_pixbuf_new_from_file_at_scale(FILENAME, imageSize.width, imageSize.height, TRUE, &error);
 }

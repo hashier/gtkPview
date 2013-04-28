@@ -69,5 +69,6 @@ void toggle_window_state( int state, APP *app );
 void show_help();
 gboolean resize_window( GtkWidget *w, GdkEvent *e, APP *app );
 void get_scaled(APP *app, char direction);
+void fill_pixbufs(APP *app);
 
 #endif /* __main_h__ */
