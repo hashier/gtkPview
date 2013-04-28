@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
 				if( tmp == 0 )
 					tmp = app.slideshow_timeout;
 
-				// If user has given value under 1000, 
+				// If user has given value under 1000,
 				// then user might have meant to set how
 				// many seconds to wait instead of milliseconds.
 				// Just fix it.
@@ -193,7 +193,7 @@ void toggle_window_state( int state, APP *app )
 		// Back to gray
 		GdkColor color;
 		gdk_color_parse( "#e7e5e4", &color );
-		gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL, 
+		gtk_widget_modify_bg( app->eventbox, GTK_STATE_NORMAL,
 				&color );
 	}
 }
@@ -226,7 +226,7 @@ static gboolean slideshow_next( APP *app )
 static void update_title( APP *app )
 {
 	gchar *title = malloc( 1024 );
-	sprintf( title, "gtkPview (%u/%u)", 
+	sprintf( title, "gtkPview (%u/%u)",
 		( g_list_index( app->list, app->pixbuf ) +1 ),
 		g_list_length( app->list ) );
 
@@ -340,7 +340,7 @@ static gboolean callback_btn_save_all( GtkWidget *widget, APP *app )
 	// Show message dialog
 	GtkWidget *dialog;
 
-	dialog = gtk_message_dialog_new( GTK_WINDOW( app->window ), 
+	dialog = gtk_message_dialog_new( GTK_WINDOW( app->window ),
 		GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
 		"Saved %d images!", num_items );
 
